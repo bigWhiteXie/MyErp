@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.codeXie.mapper.EmployeeMapper">
+    <select id="selectPage" resultMap="EmpMap">
+        select * from employee emp
+        join dept dep on emp.deptno=dep.deptno
+        join position pos on emp.posid = pos.posid
+        <where>
+            <if test="name!=null and name!=''">
+                emp.realname like concat('%',#{name},'%')
+            </if>
+            <if test="deptno!=null and deptno!=''">
+                and dep.deptno=#{deptno}
+            </if>
+            <if test="onduty!=null and onduty!=''">
+                and emp.onduty=#{onduty}
+            </if>
+            <if test="hiredate!=null and hiredate!=''">
+                and emp.hiredate=#{hiredate}
+            </if>
+        </where>
+        limit #{start},#{size}
+    </select>
+    <resultMap id="EmpMap" type="employee">
+        <id column="empid" property="empid" ></id>
+        <result column="password" property="password"></result>
+        <result column="deptno" property="deptno"></result>
+        <result column="posid" property="posid"></result>
+        <result column="mgrid" property="mgrid"></result>
+        <result column="realname" property="realname"></result>
+        <result column="sex" property="sex"></result>
+        <result column="birthdate" property="birthdate"></result>
+        <result column="hiredate" property="hiredate"></result>
+        <result column="leavedate" property="leavedate"></result>
+        <result column="onduty" property="onduty"></result>
+        <result column="emptype" property="emptype"></result>
+        <result column="phone" property="phone"></result>
+        <result column="qq" property="qq"></result>
+        <result column="emercontactperson" property="emercontactperson"></result>
+        <result column="idcard" property="idcard"></result>
+
+        <association property="dept" javaType="Dept">
+            <id column="deptno" property="deptno"></id>
+            <result column="deptname" property="deptname"></result>
+            <result column="location" property="location"></result>
+        </association>
+        <association property="position" javaType="position">
+            <id column="posid" property="posid"></id>
+            <result column="pname" property="pname"></result>
+            <result column="pdesc" property="pdesc"></result>
+        </association>
+
+    </resultMap>
+
+    <select id="empCount" resultType="int">
+        select count(0) from employee emp
+        join dept dep on emp.deptno=dep.deptno
+        join position pos on emp.posid = pos.posid
+        <where>
+            <if test="name!=null and name!=''">
+                emp.realname like concat('%',#{name},'%')
+            </if>
+            <if test="deptno!=null and deptno!=''">
+                and dep.deptno=#{deptno}
+            </if>
+            <if test="onduty!=null and onduty!=''">
+                and emp.onduty=#{onduty}
+            </if>
+            <if test="hiredate!=null and hiredate!=''">
+                and dep.deptname=#{deptname}
+            </if>
+        </where>
+    </select>
+
+<!--    多表查询、自查询 当表中出现同名字段(非连接字段)时需要起别名用来区分-->
+    <select id="selectUpdate" resultMap="EmpMap2">
+        select * from employee emp
+        join dept on emp.deptno=dept.deptno
+        join (select empid empid2,realname realname2 from employee) emp2 on emp.mgrid=emp2.empid2
+        where emp.empid=#{param1}
+    </select>
+
+    <resultMap id="EmpMap2" type="employee">
+        <id column="empid" property="empid" ></id>
+        <result column="password" property="password"></result>
+        <result column="deptno" property="deptno"></result>
+        <result column="posid" property="posid"></result>
+        <result column="mgrid" property="mgrid"></result>
+        <result column="realname" property="realname"></result>
+        <result column="sex" property="sex"></result>
+        <result column="birthdate" property="birthdate"></result>
+        <result column="hiredate" property="hiredate"></result>
+        <result column="leavedate" property="leavedate"></result>
+        <result column="onduty" property="onduty"></result>
+        <result column="emptype" property="emptype"></result>
+        <result column="phone" property="phone"></result>
+        <result column="qq" property="qq"></result>
+        <result column="emercontactperson" property="emercontactperson"></result>
+        <result column="idcard" property="idcard"></result>
+
+        <association property="dept" javaType="Dept">
+            <id column="deptno" property="deptno"></id>
+            <result column="deptname" property="deptname"></result>
+            <result column="location" property="location"></result>
+        </association>
+        <association property="mgr" javaType="employee">
+            <id column="empid2" property="empid"></id>
+            <result column="realname2" property="realname"></result>
+        </association>
+
+    </resultMap>
+</mapper>

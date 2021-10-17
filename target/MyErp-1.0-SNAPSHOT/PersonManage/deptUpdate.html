@@ -1,0 +1,78 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>无标题文档</title>
+    <link href="../css/style.css" rel="stylesheet" type="text/css" />
+    <script type="text/javascript" src="../js/jquery.js"></script>
+    <script>
+        $(()=>{
+            $.ajax({
+                url:"/MyErp/DeptServlet?method=updateNow",
+                method:'get',
+                dataType:'json',
+                success:(res)=>{
+                    if(res!=null && res!= ''){
+                        $("#no").val(res.deptno)
+                        $("#name").val(res.deptname)
+                        $("#location").val(res.location)
+                    }else{
+                        alert("请返回管理部门页面进行部门修改")
+                    }
+                }
+            })
+        })
+        function saveInfo(){
+            var info = {
+                    deptno:$("#no").val(),
+                    deptname:$("#name").val(),
+                    location:$("#location").val()
+            }
+            $.ajax({
+                url:'/MyErp/DeptServlet?method=saveDept',
+                data:info,
+                method:'post',
+                success:(res)=>{
+                    eval(res);
+                    if(msg == 'ok'){
+                        alert("保存成功");
+                        window.location.href = 'deptList.html'
+                    }else{
+                        alert("保存失败,请稍后再试")
+                    }
+                }
+            })
+        }
+    </script>
+</head>
+
+<body>
+
+	<div class="place">
+    <span>位置：</span>
+    <ul class="placeul">
+    <li><a href="#">人事管理</a></li>
+    <li><a href="#">修改部门信息</a></li>
+    </ul>
+    </div>
+    
+    <div class="formbody">
+    
+    <div class="formtitle"><span>基本信息</span></div>
+    
+    <ul class="forminfo">
+    <li><label>部门编号</label><input id="no" type="text" class="dfinput" readonly/> </li>
+    <li><label>部门名称</label><input id="name" type="text" class="dfinput"  /></li>
+    <li><label>办公地点</label><input id="location" type="text" class="dfinput" /></li>
+    <li><label>&nbsp;</label><input id="save" type="button" class="btn" value="确认保存" onclick="saveInfo()"/></li>
+    </ul>
+    
+    
+    </div>
+
+
+</body>
+
+</html>

@@ -1,0 +1,191 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<title>无标题文档</title>
+		<link href="../css/style.css" rel="stylesheet" type="text/css" />
+		<link href="../css/style.css" rel="stylesheet" type="text/css" />
+		<link href="../css/select.css" rel="stylesheet" type="text/css" />
+		<script type="text/javascript" src="../js/jquery.js"></script>
+		<script type="text/javascript" src="../js/jquery.idTabs.min.js"></script>
+		<script type="text/javascript" src="../js/select-ui.min.js"></script>
+		<script type="text/javascript" src="../editor/kindeditor.js"></script>
+		<script type="text/javascript">
+		$(document).ready(function(e) {
+		    $(".select1").uedSelect({
+				width : 345			  
+			});
+			
+		});
+		</script>
+		<script>
+			$(()=>{
+				
+					var flag1=false,flag2=false;
+					$.ajax({
+					url:'/MyErp/DeptServlet?method=findAll',
+					async:false,
+					method:'get',
+					dataType:'json',
+					success:(data)=>{
+						$("#select1").empty()
+						$(data).each((index,item)=>{
+							$("#select1").append("<option value='"+item.deptno+"'>"+item.deptname+"</option> ")
+						})
+						flag1=true;
+					}
+				
+				})
+				
+				$.ajax({
+					url:'/MyErp/EmployeeServlet?method=findManager',
+					method:'get',
+					async:false,
+
+					dataType:'json',
+					success:(res)=>{
+						$("#select3").empty()
+						$(res).each((index,item)=>{
+							$("#select3").append("<option value='"+item.empid+"'>"+item.realname+"</option> ")
+						})
+						flag1=true
+					}
+				})
+				
+			
+				$.ajax({
+					url:'/MyErp/EmployeeServlet?method=updateInfo',
+					method:'get',
+					async:false,
+					dataType:'json',
+					success:(res)=>{
+						$("input[name='empid']").val(res.empid)
+						$("input[name='realname']").val(res.realname)
+						$("input[name='sex' ][value='"+res.sex+"']").prop("checked",true)
+						$("input[name='birthdate']").val(res.birthdate)
+						$("input[name='hiredate']").val(res.hiredate);
+						$("input[name='leavedate']").val(res.leavedate);
+						$("input[name='onduty'][value='"+res.onduty+"']").prop('checked',true)
+						$("#select1").attr("value",eval("'"+res.deptno+"'"))
+						$("#select3 option[value='"+res.mgr.empid+"']").attr("selected",true)
+						$("input[name='phone']").val(res.phone)
+						$("input[name='qq']").val(res.qq)
+						console.log(eval("'"+res.deptno+"'"))
+						console.log($("#select3").val())
+					}
+				})
+
+				
+			})
+			function saveEmp(){
+					var info = $("#infoForm").serialize()
+					if(confirm("确认修改")){
+						$.ajax({
+							url:'/MyErp/EmployeeServlet?method=updateSave&'+info,
+							method:'get',
+							success:(res)=>{
+								eval(res);
+								if(msg==='ok'){
+									alert('修改成功')
+									window.location.href='empList.html'
+								}else{
+									alert('修改失败')
+								}
+							}
+						})
+					}
+				}
+		</script>
+	</head>
+
+	<body>
+
+		<div class="place">
+			<span>位置：</span>
+			<ul class="placeul">
+				<li><a href="#">人事管理</a></li>
+				<li><a href="#">修改员工信息</a></li>
+			</ul>
+		</div>
+
+		<div class="formbody">
+
+			<div class="formtitle"><span>基本信息</span></div>
+			<form id="infoForm">
+				<ul class="forminfo">
+					<li>
+						<label>用户名</label>
+						<input name="empid" type="text" class="dfinput" value="gaoqi" /><i>必须唯一，也可以根据真实姓名自动生成</i></li>
+					<li>
+						<li>
+							<label>真实姓名</label>
+							<input name="realname" type="text" class="dfinput" value="高淇"/><i></i></li>
+						<li>
+							<label>性别</label><cite>
+							<input name="sex" type="radio" value="1"  />男&nbsp;&nbsp;&nbsp;&nbsp;
+							<input name="sex" type="radio" value="0" />女<i>也可以根据身份证号自动获取</i></cite>
+							
+						</li>
+						<li>
+							<label>出生日期</label>
+							<input name="birthdate" type="text" class="dfinput" /><i>也可以根据身份证号自动获取</i></li>
+						<li>
+						<li>
+							<label>入职时间</label>
+							<input name="hiredate" type="text" class="dfinput" /><i></i></li>
+						
+						<li>
+							<label>离职时间</label>
+							<input name="leavedate" type="text" class="dfinput" /><i></i></li>
+						<li>
+							<label>是否在职</label><cite>
+							<input name="onduty" type="radio" value="1"  />是&nbsp;&nbsp;&nbsp;&nbsp;
+							<input name="onduty" type="radio" value="0" />否</cite>
+						</li>
+						<li>
+							<label>所属部门<b>*</b></label>
+							<div class="vocation">
+								<select class="select1" id="select1" name="deptno">
+									
+								</select>
+							</div>
+
+						</li>
+						<li>
+							<label>直接上级<b>*</b></label>						
+							<div class="vocation">
+								<select class="select1" id="select3" name="mgrid">
+									
+								</select>							
+							</div>
+						&nbsp;&nbsp;<input name="" type="text" class="dfinput"  placeholder="也可以在此输入首字母帮助显示"/></li>
+						</li>
+						<li>
+							<label>联系方式</label>
+							<input name="phone" type="text" class="dfinput" />
+						</li>
+						<li>
+							<label>QQ号</label>
+							<input name="qq" type="text" class="dfinput" />
+						</li>
+						<li>
+							<label>紧急联系人信息</label>
+							<textarea name="" cols="" rows="" class="textinput"></textarea>
+						</li>
+						<li>
+							<label>身份证号</label>
+							<input name="idcard" type="text" class="dfinput" />
+						</li>
+						<li>
+							<label>&nbsp;</label>
+							<input onclick="saveEmp()" type="button" class="btn" value="确认保存" />
+						</li>
+				</ul>
+			</form>
+
+		</div>
+
+	</body>
+
+</html>

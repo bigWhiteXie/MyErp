@@ -1,0 +1,139 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<title>无标题文档</title>
+		<link href="../css/style.css" rel="stylesheet" type="text/css" />
+		<link href="../css/style.css" rel="stylesheet" type="text/css" />
+		<link href="../css/select.css" rel="stylesheet" type="text/css" />
+		<script type="text/javascript" src="../js/jquery.js"></script>
+		<script type="text/javascript" src="../js/jquery.idTabs.min.js"></script>
+		<script type="text/javascript" src="../js/select-ui.min.js"></script>
+		<script type="text/javascript" src="../editor/kindeditor.js"></script>
+		<script type="text/javascript">
+			$(document).ready(function(e) {
+				$(".select1").uedSelect({
+					width : 345			  
+				});
+				
+			});
+			$(()=>{
+				$.ajax({
+					url:'/MyErp/EmployeeServlet?method=updateInfo',
+					method:'get',
+					async:false,
+					dataType:'json',
+					success:(res)=>{
+						$("label[name='empid']").text(res.empid)
+						$("label[name='realname']").text(res.realname)
+						if(res.sex=='0'){
+							$("label[name='sex' ]").text('女')
+						}else{
+							$("label[name='sex' ]").text('男')
+
+						}
+						$("label[name='birthdate']").text(res.birthdate)
+						$("label[name='hiredate']").text(res.hiredate);
+						$("label[name='leavedate']").text(res.leavedate);
+						$("label[name='deptname']").text(res.dept.deptname)
+						if(res.onduty=='0'){
+							$("label[name='onduty' ]").text('离职')
+						}else{
+							$("label[name='onduty' ]").text('在职')
+
+						}
+						$("label[name=mgrname]").text(res.mgr.realname)
+						$("label[name='phone']").text(res.phone)
+						$("label[name='qq']").text(res.qq)
+
+					}
+				})
+
+			})
+	</script>
+	</head>
+
+	<body>
+
+		<div class="place">
+			<span>位置：</span>
+			<ul class="placeul">
+				<li><a href="#">人事管理</a></li>
+				<li><a href="#">员工信息详情</a></li>
+			</ul>
+		</div>
+
+		<div class="formbody">
+
+			<div class="formtitle"><span>基本信息</span></div>
+
+			<ul class="forminfo">
+				<li>
+					<label>用户名</label>
+					<label name="empid"></label>
+				</li>
+				<li>
+					<li>
+						<label >真实姓名</label>
+						<label name="realname"></label>
+					</li>
+					<li>
+						<label>性别</label>
+						<label name="sex">男</label>						
+					</li>
+					<li>
+						<label>出生日期</label>
+						<label name="birthdate"></label>
+					</li>
+					<li>
+					<li>
+						<label>入职时间</label>
+						<label name="hiredate"></label>
+					</li>
+					
+					<li>
+						<label>离职时间</label>
+						<label name="leavedate"></label>
+					</li>
+					<li>
+						<label>是否在职</label>
+						<label name="onduty"></label>
+					</li>
+					<li>
+						<label>所属部门<b>*</b></label>
+						<label name="deptname"></label>
+
+					</li>
+					<li>
+						<label>直接上级<b>*</b></label>						
+						<label name="mgrname"><b>*</b></label>	
+					</li>
+					</li>
+					<li>
+						<label>联系方式</label>
+						<label name="phone"></label>
+					</li>
+					<li>
+						<label>QQ号</label>
+						<label name="qq"></label>
+					</li>
+					<li>
+						<label>紧急联系人信息</label>
+						<label>紧急联系人信息</label>
+					</li>
+					<li>
+						<label>身份证号</label>
+						<label name=idcard></label>
+					</li>
+					<li>
+						<label>&nbsp;</label>
+						<input name="" type="button" class="btn" value="返回" />
+					</li>
+			</ul>
+
+		</div>
+
+	</body>
+
+</html>

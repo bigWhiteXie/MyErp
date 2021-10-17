@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.codeXie.mapper.DutyMapper">
+    <select id="dutyManageMapper" resultMap="rm1">
+        select * from duty join  employee emp on duty.emprid=emp.empid
+        join  dept on emp.deptno=dept.deptno
+        <where>
+            <if test="empid!=null and empid!=''  ">
+                empid=#{empid}
+            </if>
+            <if test="deptno!=null and deptno!=''  ">
+                and emp.deptno=#{deptno}
+            </if>
+            <if test="dtdate!=null and dtdate!=''  ">
+                and dtdate=#{dtdate}
+            </if>
+        </where>
+        limit #{start},#{size}
+    </select>
+    <resultMap id="rm1" type="duty">
+        <id property="dtid" column="dtid"></id>
+        <result property="emprid" column="emprid"></result>
+        <result property="dtdate" column="dtdate"></result>
+        <result property="signintime" column="signintime"></result>
+        <result property="signouttime" column="signouttime"></result>
+        <association property="employee" javaType="employee">
+            <id property="empid" column="empid"></id>
+            <result property="realname" column="realname"></result>
+        </association>
+        <association property="dept" javaType="dept">
+            <id property="deptno" column="deptno"></id>
+            <result property="deptname" column="deptname"></result>
+        </association>
+    </resultMap>
+</mapper>

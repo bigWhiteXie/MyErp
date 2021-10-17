@@ -1,0 +1,65 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>无标题文档</title>
+        <link href="../css/style.css" rel="stylesheet" type="text/css" />
+        <script type="text/javascript" src="../js/jquery.js"></script>
+        <script type="text/javascript">
+            $(()=>{
+                $("#submit").click(()=>{
+                    var info = {
+                        method:"addDept",
+                        deptno:$("#deptno").val(),
+                        deptname:$("#deptname").val(),
+                        location:$("#location").val()
+                    }
+                    $.ajax({
+                        url:"/MyErp/DeptServlet",
+                        method:"post",
+                        data:info,
+                        success:(res)=>{
+                            console.log(res)
+                            eval(res)
+                            if(msg=='ok'){
+                                alert("提交成功")
+                                window.location.href = "deptList.jsp"
+                            }else{
+                                alert("添加失败，请检查是否部门编号或部门名是否重复")
+                            }
+                        }
+                    })
+                })
+            })
+
+        </script>
+    </head>
+
+<body>
+
+	<div class="place">
+    <span>位置：</span>
+    <ul class="placeul">
+    <li><a href="#">人事管理</a></li>
+    <li><a href="#">添加部门</a></li>
+    </ul>
+    </div>
+    
+    <div class="formbody">
+    
+    <div class="formtitle"><span>基本信息</span></div>
+    
+    <ul class="forminfo">
+	<li><label>部门编号</label><input id="deptno" type="text" class="dfinput" /> </li>
+    <li><label>部门名称</label><input id="deptname" type="text" class="dfinput" /> </li>
+    <li><label>办公地点</label><input id="location" type="text" class="dfinput" /></li>
+    <li><label>&nbsp;</label><input id="submit" type="button" class="btn" value="确认保存"/></li>
+    </ul>
+    
+    
+    </div>
+
+
+</body>
+
+</html>

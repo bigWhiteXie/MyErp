@@ -1,0 +1,277 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<title>无标题文档</title>
+		<link href="../css/style.css" rel="stylesheet" type="text/css" />
+		<link href="../css/select.css" rel="stylesheet" type="text/css" />
+
+		<script type="text/javascript" src="../js/jquery.js"></script>
+		
+		<script type="text/javascript" src="../js/jquery.idTabs.min.js"></script>
+		<script type="text/javascript" src="../js/select-ui.min.js"></script>
+		<script type="text/javascript" src="../editor/kindeditor.js"></script>
+		<script type="text/javascript">
+		$(document).ready(function(e) {
+		    $(".select1").uedSelect({
+				width : 200		  
+			});
+			
+		});
+		</script>
+		<script type="text/javascript">
+			$(document).ready(function(){
+			$(".click").click(function(){
+			  $(".tip").fadeIn(200);
+			});
+			  
+			$(".tiptop a").click(function(){
+			  $(".tip").fadeOut(200);
+			});
+			
+			$(".sure").click(function(){
+			  $(".tip").fadeOut(100);
+			});
+			
+			$(".cancel").click(function(){
+			  $(".tip").fadeOut(100);
+			});
+			
+			});
+		</script>
+		<script>
+			$(()=>{
+				$.ajax({
+				url:'/MyErp/DeptServlet?method=findAll',
+				method:'get',
+				dataType:'json',
+				success:(res)=>{
+					$("#select1").empty()
+					$(res).each((index,item)=>{
+						$("#select1").append("<option value='"+item.deptno+"'>"+item.deptname+"</option> ")
+					})
+				}
+			})
+			getData()
+			})
+			function getData(index,size){
+				var info = $("#info").serialize()
+				if(index === undefined){
+					index = 1
+				}
+				if(size === undefined){
+					size = 5
+				}
+				$.ajax({
+				url:'/MyErp/EmployeeServlet?method=findPage&'+info,
+				method:'get',
+				cache:false,
+				data:{index:index,size:size},
+				dataType:'json',
+				success:(res)=>{
+					$("#tb").empty()
+					$(res.list).each((index,item)=>{
+						$("#tb").append('<tr>'+
+						'<td>'+
+							'<input name="" type="checkbox" value="" />'+
+						'</td>'+
+						'<td>'+item.empid+'</td>'+
+						'<td>'+item.realname+'</td>'+
+						'<td>'+item.dept.deptno+'</td>'+
+						'<td>'+item.position.pname+'</td>'+
+						'<td>'+item.hiredate+'</td>'+
+						'<td>'+item.phone+'</td>'+
+						'<td>'+
+							'<a href="javascript:void(0)" class="tablelink" onclick="checkEmp('+"'"+item.empid+"'"+')">查看</a> '+
+							'<a href="javascript:void(0)" class="tablelink update"  onclick="updateEmp('+"'"+item.empid+"'"+')">修改</a>'+ //注意字符串拼接问题 
+							'<a href="#" class="tablelink click" onclick="delEmp('+"'"+item.empid+"'"+')"> 删除</a>'+
+							'<a href="#" class="tablelink" onclick="resetPwd('+"'"+item.empid+"'"+')"> 重置密码</a>'+
+						'</td>'+
+					'</tr>')
+					})
+					$(".message").empty()
+					$(".message").append('共<i class="blue">'+res.totalCount+'</i>条记录，当前显示第&nbsp;<i class="blue">'+res.index+'&nbsp;</i>页')
+					$(".paginList").empty()
+					if(res.index != 1){
+						$(".paginList").append('<li class="paginItem" onclick="getData('+Number(res.index)-1+')"><a href="javascript:;"><span class="pagepre"></span></a></li>')
+					}
+					for(var i=1;i<=res.totalPageCount;i++){
+						if(res.index != i){
+							$(".paginList").append('<li class="paginItem" onclick="getData('+i+')"><a href="javascript:;">'+i+'</a></li>')
+						}else{
+							$(".paginList").append('<li class="paginItem current" onclick="getData('+i+')"><a href="javascript:;">'+i+'</a></li>')
+						}
+					}
+					if(res.index != res.totalPageCount){
+						$(".paginList").append('<li class="paginItem" onclick="getData('+Number(res.index)+1+')"><a href="javascript:;"><span class="pagenxt"></span></a></li>')
+					}
+				}
+			})
+		}
+			function updateEmp(empid){
+				$.ajax({
+					url:"/MyErp/EmployeeServlet?method=updateEmp",
+					method:'get',
+					data:{empid:empid},
+					success:(res)=>{
+						eval(res);
+						if(msg === 'ok'){
+							window.location.href="empUpdate.html";
+						}
+					}
+				})
+			}
+			function checkEmp(empid){
+				$.ajax({
+					url:"/MyErp/EmployeeServlet?method=updateEmp",
+					method:'get',
+					data:{empid:empid},
+					success:(res)=>{
+						eval(res);
+						if(msg === 'ok'){
+							window.location.href="empInfo.html";
+						}
+					}
+				})
+			}
+			function delEmp(empid){
+				if(confirm('确定要删除吗')){
+					$.ajax({
+						url:"/MyErp/EmployeeServlet?method=delEmp",
+						method:'get',
+						data:{empid:empid},
+						success:(res)=>{
+							eval(res);
+							if(msg === 'ok'){
+								alert('删除成功')
+								location.reload()
+							}else{
+								alert('删除失败')
+							}
+						}
+					})
+				}
+			}
+			function resetPwd(empid){
+				if(confirm("确定要重置密码吗")){
+					$.ajax({
+						url:"/MyErp/EmployeeServlet?method=resetPwd",
+						method:'get',
+						data:{empid:empid},
+						success:(res)=>{
+							eval(res);
+							if(msg === 'ok'){
+								alert('修改成功')
+							}else{
+								alert('修改失败')
+							}
+						}
+					})
+				}
+			}
+		</script>
+
+	</head>
+
+	<body>
+
+		<div class="place">
+			<span>位置：</span>
+			<ul class="placeul">
+				<li><a href="#">人事管理</a></li>
+				<li><a href="#">员工管理</a></li>
+			</ul>
+		</div>
+
+		<div class="rightinfo">
+			<form id="info">
+				<ul class="prosearch">
+					<li>
+						<label>查询：</label><i>用户名</i>
+						<a>
+							<input name="realname" type="text" class="scinput" />
+						</a><i>所属部门</i>
+						<a>
+							<select class="select1" name="depton" id="select1">
+									
+								</select>
+						</a>
+									
+					</li>
+					<li>
+						<label>是否在职：</label>
+						<input name="onduty" type="radio" value="1" checked="checked" />&nbsp;是&nbsp;&nbsp;
+						<input name="onduty" type="radio" value="0" />&nbsp;否				
+					</li>
+					<li>
+						<label>入职时间：</label>
+						<a>
+							<input name="hiredate" type="text" class="scinput" />
+						</a>		
+					</li>
+						<a>
+							<input id="save" type="button" class="sure" value="查询" />
+						</a>
+				</ul>
+			</form>
+
+			<div class="formtitle1"><span>员工列表</span></div>
+
+			<table class="tablelist">
+				<thead>
+					<tr>
+						<th>
+							<input name="" type="checkbox" value="" checked="checked" />
+						</th>
+						<th>用户名<i class="sort"><img src="../images/px.gif" /></i></th>
+						<th>真实姓名</th>
+						<th>所属部门</th>
+						<th>所属岗位</th>
+						<th>入职时间</th>
+						<th>联系方式</th>
+						<th>操作</th>
+					</tr>
+				</thead>
+				<tbody id="tb">
+					
+
+				</tbody>
+			</table>
+
+			<div class="pagin">
+				<div class="message">共<i class="blue">1256</i>条记录，当前显示第&nbsp;<i class="blue">2&nbsp;</i>页</div>
+				<ul class="paginList">
+					
+				</ul>
+			</div>
+
+			<div class="tip">
+				<div class="tiptop"><span>提示信息</span>
+					<a></a>
+				</div>
+
+				<div class="tipinfo">
+					<span><img src="../images/ticon.png" /></span>
+					<div class="tipright">
+						<p>是否确认对信息的修改 ？</p>
+						<cite>如果是请点击确定按钮 ，否则请点取消。</cite>
+					</div>
+				</div>
+
+				<div class="tipbtn">
+					<input name="" type="button" class="sure" value="确定" />&nbsp;
+					<input name="" type="button" class="cancel" value="取消" />
+				</div>
+
+			</div>
+
+		</div>
+
+		<script type="text/javascript">
+			$('.tablelist tbody tr:odd').addClass('odd');
+		</script>
+
+	</body>
+
+</html>

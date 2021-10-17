@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.codeXie.mapper.ExpenseMapper">
+    <select id="selectAll" resultMap="rm">
+        select * from expense exp join employee emp on exp.empid=emp.empid
+        join expenseitem item on item.expid=exp.expid
+        where status='待审核' and nextauditor=#{param1}
+    </select>
+    <resultMap id="rm" type="expense">
+        <id column="expid" property="expid"></id>
+        <result column="empid" property="empid"></result>
+        <result column="totalamount" property="totalamount"></result>
+        <result column="exptime" property="exptime"></result>
+        <result column="expdesc" property="expdesc"></result>
+        <result column="nextauditor" property="nextauditor"></result>
+        <result column="lastResult" property="lastResult"></result>
+        <result column="status" property="status"></result>
+
+        <association property="employee" javaType="employee">
+            <id column="empid" property="empid"></id>
+            <result column="realname" property="realname"></result>
+        </association>
+
+        <collection property="list" ofType="expenseitem">
+            <id column="itemid" property="itemid"></id>
+            <result column="expid" property="expid"></result>
+            <result column="type" property="type"></result>
+            <result column="amount" property="amount"></result>
+            <result column="itemdesc" property="itemdesc"></result>
+        </collection>
+    </resultMap>
+
+
+</mapper>

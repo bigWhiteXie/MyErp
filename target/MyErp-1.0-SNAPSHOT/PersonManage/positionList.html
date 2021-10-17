@@ -1,0 +1,250 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>无标题文档</title>
+<link href="../css/style.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="../js/jquery.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){
+  $(".click").click(function(){
+  $(".tip").fadeIn(200);
+  });
+  
+  $(".tiptop a").click(function(){
+  $(".tip").fadeOut(200);
+});
+
+  $(".sure").click(function(){
+  $(".tip").fadeOut(100);
+});
+
+  $(".cancel").click(function(){
+  $(".tip").fadeOut(100);
+});
+
+});
+</script>
+<script>
+  //获取当前页面的信息：包括记录集合、记录总数、页数
+  //并重新渲染记录集合、页数
+  function getData(index,size){
+    //若未指定index和size则将其初始化为1和5
+    if(index === undefined){
+      index = 1 
+    }
+    if(size === undefined){
+      size = 5
+    }
+    //向服务器发送请求，请求当前页面数据
+    $.ajax({
+      url:'/MyErp/PositionServlet?method=findPage',
+      method:'get',
+      data:{index:index,size:size},
+      dataType:'json',
+      success:(res)=>{
+        //将当前页的记录置空，将服务器发送的记录添加到表格中
+        $(".tablelist tbody").empty()
+        $(res.list).each((index,item)=>{
+          $(".tablelist tbody").append(
+            "<tr>"+
+        "<td><input name='pid' type='checkbox' value='' /></td>"+
+        "<td>"+item.posid+"</td>"+
+        "<td>"+item.pname+"</td>"+
+        "<td>"+(item.pdesc==undefined?'无':item.pdesc)+"</td>"+
+        "<td>  <a href='javascript:void(0)' onclick='update("+item.posid+")' class='tablelink'>修改</a>   <a href='avascript:void(0)'' class='tablelink click' onclick='remove("+item.posid+","+res.index+")'> 删除</a></td>"+
+        "</tr>"
+          )
+         
+        })
+        //将当前分页模块的内容置为空，重新开始分页
+        $('.message').empty()
+          $('.message').append(
+            '共<i class="blue">'+res.totalCount+'</i>条记录，当前显示第&nbsp;<i class="blue">'+res.index+'&nbsp;</i>页'
+          )
+          //将页码置空
+          $('.paginList').empty()
+          //前一页功能,若当前页面不为1则显示
+          if(res.index != 1){
+            $('.paginList').append('<li class="paginItem" onclick="prePage('+res.index+')"><a href="javascript:;"><span class="pagepre"></span></a></li>')
+          }
+          //依次将页码添加，若与当前页面相同则添加current样式类
+          for(var i=1;i<=res.totalPageCount;i++){
+            if(i != res.index){
+              $('.paginList').append('<li class="paginItem" onclick="getData('+i+')"><a href="javascript:;">'+i+'</a></li>')
+            }else{
+              $('.paginList').append('<li class="paginItem current" onclick="getData('+i+')"><a href="javascript:;">'+i+'</a></li>')
+            }
+          }
+          //后一页功能,若当前页面不是最后一页则显示
+          if(res.index<res.totalPageCount){
+            $('.paginList').append('<li class="paginItem" onclick="nextPage('+res.index+','+res.totalPageCount+')"><a href="javascript:;"><span class="pagenxt"></span></a></li>')
+          }
+
+
+      }
+     
+    })
+  }
+  function prePage(index){
+    var cur = Number(index);
+    if(index == 1){
+      alert('当前已经是第一页了')
+    }else{
+      getData(cur-1)
+    }
+  }
+  function nextPage(index,total){
+    var cur = Number(index)
+    var totalPage = Number(totap)
+    if(cur == totalPage){
+      alert('当前已经是最后一页了')
+    }else{
+      getData(cur+1)
+    }
+  }
+  function remove(id,index){
+    $.ajax({
+      url:"/MyErp/PositionServlet?method=removeItem&posid="+id,
+      method:'get',
+      success:(res)=>{
+        eval(res);
+        if(msg === 'ok'){
+          alert('删除成功')
+          getData(index)
+        }else{
+          alert('删除失败')
+        }
+      }
+    })
+  }
+  function update(id){
+    $.ajax({
+      url:"/MyErp/PositionServlet?method=updatePos&posid="+id,
+      method:'get',
+      success:(res)=>{
+        eval(res);
+        if(msg === 'ok'){
+          window.location.href = 'positionUpdate.html'
+        }else{
+          alert('服务器繁忙，请稍后再试')
+        }
+      }
+    })
+  }
+  $(()=>{
+    getData()
+  })
+</script>
+
+</head>
+
+
+<body>
+
+	<div class="place">
+    <span>位置：</span>
+    <ul class="placeul">
+    <li><a href="#">人事管理</a></li>
+    <li><a href="#">岗位管理</a></li>
+    </ul>
+    </div>
+    
+    <div class="rightinfo">
+    
+      
+   <div class="formtitle1"><span>岗位列表</span></div>
+   
+    <table class="tablelist" >
+    	<thead>
+    	<tr>
+        <th><input name="" type="checkbox" value="" checked="checked"/></th>
+        <th>编号<i class="sort"><img src="../images/px.gif" /></i></th>
+        <th>岗位名称</th>
+        <th>岗位描述</th>
+        <th>操作</th>
+        </tr>
+        </thead>
+        
+        <tbody>
+        <tr>
+        <td><input name="" type="checkbox" value="" /></td>
+        <td>1</td>
+        <td>总裁</td>
+        <td>公司总体发展战略规划和管理</td>
+        <td>  <a href="positionUpdate.html" class="tablelink">修改</a>   <a href="#" class="tablelink click"> 删除</a></td>
+        </tr> 
+        
+        <tr>
+        <td><input name="" type="checkbox" value="" /></td>
+        <td>2</td>
+        <td>教学经理</td>
+        <td>负责日常教学管理</td>
+        <td> <a href="positionUpdate.html" class="tablelink">修改</a>   <a href="#" class="tablelink click"> 删除</a></td>
+        </tr>
+        
+        <tr>
+        <td><input name="" type="checkbox" value="" /></td>
+        <td>3</td>
+        <td>咨询经理</td>
+        <td>完成咨询部日常管理</td>
+        <td><a href="positionUpdate.html" class="tablelink">修改</a>   <a href="#" class="tablelink"> 删除</a></td>
+        </tr>
+        
+        <tr>
+        <td><input name="" type="checkbox" value="" /></td>
+        <td>4</td>
+        <td>咨询师</td>
+        <td>完成日常咨询任务</td>
+        <td>  <a href="positionUpdate.html" class="tablelink">修改</a>   <a href="#" class="tablelink"> 删除</a></td>
+        </tr>
+        </tbody>
+    </table>
+    <div class="pagin">
+      <div class="message">共<i class="blue">1256</i>条记录，当前显示第&nbsp;<i class="blue">2&nbsp;</i>页</div>
+      <ul class="paginList">
+        <li class="paginItem"><a href="javascript:;"><span class="pagepre"></span></a></li>
+        <li class="paginItem"><a href="javascript:;">1</a></li>
+        <li class="paginItem current"><a href="javascript:;">2</a></li>
+        <li class="paginItem"><a href="javascript:;">3</a></li>
+        <li class="paginItem"><a href="javascript:;">4</a></li>
+        <li class="paginItem"><a href="javascript:;">5</a></li>
+        <li class="paginItem more"><a href="javascript:;">...</a></li>
+        <li class="paginItem"><a href="javascript:;">10</a></li>
+        <li class="paginItem"><a href="javascript:;"><span class="pagenxt"></span></a></li>
+      </ul>
+    </div>
+    
+       
+    
+    <div class="tip">
+    	<div class="tiptop"><span>提示信息</span><a></a></div>
+        
+      <div class="tipinfo">
+        <span><img src="../images/ticon.png" /></span>
+        <div class="tipright">
+        <p>是否确认对信息的修改 ？</p>
+        <cite>如果是请点击确定按钮 ，否则请点取消。</cite>
+        </div>
+        </div>
+        
+        <div class="tipbtn">
+        <input name="" type="button"  class="sure" value="确定" />&nbsp;
+        <input name="" type="button"  class="cancel" value="取消" />
+        </div>
+    
+    </div>
+    
+    
+    
+    
+    </div>
+    
+    <script type="text/javascript">
+	$('.tablelist tbody tr:odd').addClass('odd');
+	</script>
+
+</body>
+
+</html>
